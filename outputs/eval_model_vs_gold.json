@@ -4,7 +4,7 @@
   "iou_threshold": 0.5,
   "pred_file": "outputs\\model_clip_01.txt",
   "gt_file": "gold\\clip_01\\gt.txt",
-  "pred_label": "yolo26n + bytetrack",
+  "pred_label": "yolo26n.pt + bytetrack.yaml",
   "gt_label": "gold clip_01",
   "metrics": {
     "HOTA": 0.7085,

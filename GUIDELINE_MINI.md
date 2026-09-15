@@ -1,78 +1,69 @@
-# Mini annotation guideline — Ngày 3 (tracking)
+# Mini annotation guideline - Ngày 3 tracking
 
-> Điền file này **trong lúc gán nhãn**, không phải sau khi xong. Mỗi lần bạn dừng
-> lại nghĩ "cái này tính sao nhỉ?" thì đó là một dòng phải ghi vào đây.
->
-> Đây là tài liệu mà người gán nhãn tiếp theo sẽ đọc để làm giống bạn. Nếu hai
-> người trong nhóm gán khác nhau, gần như luôn là vì file này chưa nói rõ — chứ
-> không phải vì ai kém.
-
-Nhóm / tên: `Đoàn Văn Thắng (MSSV: 2A202602327 - T037)`  
-Clip: `clip_01`, `clip_02`
+Người thực hiện: Đoàn Văn Thắng - MSSV 2A202602327 - Lớp T037
+Clip áp dụng: clip_01, clip_02
 
 ---
 
 ## 1. Phạm vi: gán cái gì, không gán cái gì
 
-Một lớp duy nhất: **`vehicle`** — xe bốn bánh (xe con, van, xe buýt, xe tải).
+Một lớp duy nhất là vehicle gồm mọi xe bốn bánh di chuyển hoặc dừng đỗ trên đường.
 
 | Gán | Không gán |
 | --- | --- |
-| xe con, SUV, taxi, xe bán tải | người đi bộ |
-| van, minivan | xe đạp |
-| xe buýt, minibus | **xe máy / mô tô** |
-| xe tải, xe đầu kéo | xe trong ảnh quảng cáo, trong gương, dưới bóng nước |
+| Xe con, taxi, xe bán tải | Người đi bộ |
+| Xe van, minivan | Xe đạp |
+| Xe buýt, minibus | Xe máy, xe mô tô |
+| Xe tải, xe đầu kéo | Xe trong biển quảng cáo, xe phản chiếu qua gương |
 
-Bổ sung của nhóm (nếu có): 
-- **Xe đỗ cố định bên lề đường**: VẪN GÁN là `vehicle` và duy trì một `track_id` duy nhất xuyên suốt thời gian xe nằm trong khung hình (ví dụ xe màu trắng đỗ lề trái ở `clip_01` từ frame 1 đến 190).
-- **Xe máy và người đi bộ**: Tuyệt đối KHÔNG gán, kể cả khi họ đi song song hoặc cắt ngang xe ô tô. Gán thêm sẽ bị tính là False Positive (FP) và trừ điểm nặng vào MOTA.
-- **Phương tiện thô sơ khác**: Xe ba gác, xe xích lô hoặc xe đẩy hàng không thuộc danh mục xe 4 bánh, không gán.
+Quy định bổ sung của nhóm:
+- Xe đỗ cố định bên lề đường vẫn phải gán nhãn vehicle và giữ một track ID duy nhất xuyên suốt các frame mà xe xuất hiện trong khung hình. Ví dụ chiếc xe màu trắng đỗ lề trái ở clip 01 từ frame 1 đến frame 190.
+- Xe máy và người đi bộ tuyệt đối không gán, kể cả khi họ đi sát cạnh ô tô. Nếu gán thêm sẽ bị tính lỗi False Positive làm giảm điểm MOTA.
+- Các phương tiện thô sơ như xe đẩy hàng, xe xích lô hoặc xe ba gác không thuộc nhóm xe bốn bánh nên không gán.
 
-## 2. Luật ID — phần quan trọng nhất
+## 2. Luật ID
 
-| Tình huống | Luật của nhóm | Vì sao |
+| Tình huống | Luật của nhóm | Lý do |
 | --- | --- | --- |
-| Xe bị che một phần rồi hiện lại | Giữ nguyên ID nếu bị che **dưới 25 frame** (mặc định của lab: 25 frame = 2 giây @ 12.5 fps) | Quán tính, vận tốc và hướng di chuyển của xe trong 2 giây còn xác định chắc chắn được; duy trì đúng danh tính thực tế của xe mà không làm gãy trajectory. |
-| Xe bị che lâu hơn ngưỡng trên | Mở track mới (ID mới) | Sau 2 giây bị che hoàn toàn, xe có thể đã rẽ, dừng hoặc bị hoán đổi vị trí với xe khác; giữ ID cũ có rủi ro cao gây ID switch sai. |
-| Xe rời khung hình rồi quay lại | Mặc định: **track mới** (ID mới) | Theo chuẩn MOTChallenge, khi vật thể hoàn toàn ra khỏi vùng nhìn thấy của camera thì vòng đời track đó kết thúc; việc xe quay lại tính là một quan sát độc lập mới. |
-| Hai xe cắt nhau / chồng lên nhau | Giữ nguyên ID của từng xe dựa trên quỹ đạo và đặc điểm nhận dạng (màu xe, hướng đi, độ lớn) | Hai xe chỉ chồng lấp hình học trên mặt phẳng ảnh (occlusion), bản chất là hai thực thể tách biệt; tuyệt đối không đổi chéo ID khi giao cắt. |
+| Xe bị che một phần rồi hiện lại | Giữ nguyên ID nếu thời gian bị che dưới 25 frame, tương đương 2 giây ở tốc độ 12.5 fps | Trong khoảng 2 giây, hướng di chuyển và vận tốc của xe vẫn có thể suy đoán chính xác, giữ ID cũ giúp đường đi của xe liền mạch và đúng thực tế |
+| Xe bị che lâu hơn 25 frame | Kết thúc track cũ và mở track ID mới khi xe xuất hiện lại | Sau 2 giây bị che hoàn toàn, xe có thể đã chuyển hướng, dừng lại hoặc đổi làn, việc cố giữ ID cũ rất dễ gây lỗi ID switch |
+| Xe rời khung hình rồi quay lại | Mở track ID mới | Khi xe đã đi ra ngoài góc nhìn của camera thì chu kỳ theo dõi của track đó coi như kết thúc, việc xe vào lại được tính là đối tượng mới |
+| Hai xe cắt nhau hoặc chồng lấp lên nhau | Giữ nguyên ID của từng xe dựa theo màu sắc xe, kích thước và hướng chuyển động | Hai xe chỉ che khuất nhau trên mặt phẳng camera chứ không gộp làm một, cần quan sát liên tục trước và sau giao cắt để không gán nhầm ID của nhau |
 
-## 3. Luật bbox
+## 3. Luật vẽ bbox
 
-| Tình huống | Luật của nhóm |
+| Tình huống | Quy định thao tác |
 | --- | --- |
-| Xe bị cắt bởi rìa ảnh | Bbox chạm đúng rìa ảnh ($x=0$, $y=0$, $x=W$ hoặc $y=H$), không phỏng đoán/vẽ phần thân xe nằm ngoài khung hình. |
-| Xe bị xe khác che một phần | Bbox chỉ ôm sát **phần nhìn thấy được** (visible box), không vẽ bao trùm phần bị che khuất. |
-| Xe vừa xuất hiện, còn rất nhỏ / rất mờ | Bắt đầu track từ frame đầu tiên xác định được là xe bốn bánh; ngưỡng nhóm chọn: kích thước tối thiểu từ ~20px mỗi chiều và phân biệt rõ kết cấu đèn/kính xe khỏi xe máy/nền. |
-| Xe đang đỗ, không di chuyển | Tạo bbox ôm sát ở frame 1, kiểm tra định kỳ để bbox không bị trôi do rung lắc camera; duy trì liên tục và KHÔNG bấm outside giữa chừng. |
-| Keyframe đặt dày ở đâu | Đặt dày (3-5 frame/keyframe) khi xe rẽ hướng, đổi góc nhìn (từ làn xa về gần), tăng/giảm tốc hoặc đi qua vùng bị che; đặt thưa (15-20 frame) khi xe đi thẳng đều ở làn xa. |
+| Xe bị cắt bởi mép ảnh | Bbox chạm đúng mép khung hình, tuyệt đối không phỏng đoán phần thân xe nằm ngoài ảnh |
+| Xe bị xe khác che một phần | Bbox chỉ bao quanh phần nhìn thấy của xe, không vẽ trùm lên phần bị che |
+| Xe mới xuất hiện ở mép ảnh | Bắt đầu track ngay từ frame đầu tiên nhìn rõ chi tiết đặc trưng như mui xe, đèn hoặc kính xe với kích thước tối thiểu từ 20 pixel mỗi cạnh |
+| Xe đang đỗ không di chuyển | Vẽ bbox ôm sát xe ở frame đầu tiên, kiểm tra các frame sau để bbox không bị lệch, giữ nguyên ID và không bấm outside giữa chừng |
+| Mật độ đặt keyframe | Đặt dày từ 3 đến 5 frame một keyframe khi xe rẽ cua, tăng giảm tốc hoặc đổi góc nhìn; đặt thưa từ 15 đến 20 frame khi xe chạy thẳng đều ở làn xa |
 
-## 4. Ít nhất ba ca mơ hồ đã gặp thật
-
-Ghi **frame cụ thể** và **ID cụ thể**, không ghi chung chung.
+## 4. Ba ca mơ hồ cụ thể trong thực tế
 
 ### Ca 1
-- Clip / frame / ID: `clip_01` / frame 1-190 / ID 2 (ứng với Gold Track 1)
-- Tình huống: Chiếc ô tô màu trắng đỗ cố định bên lề đường bên trái suốt toàn bộ 190 frame không di chuyển.
-- Quyết định: Vẫn gán nhãn `vehicle`, duy trì một `track_id` duy nhất từ frame 1 đến 190, không bấm `outside`.
-- Lý do: Schema tracking yêu cầu quản lý toàn bộ phương tiện 4 bánh hiện diện trong video. Xe đỗ vẫn là vehicle; nếu không gán sẽ bị tính 190 lỗi False Negative (FN), còn nếu bấm outside giữa chừng sẽ làm phân mảnh track.
+- Vị trí: clip 01, frame 1 đến 190, ID 2, tương ứng Gold Track 1
+- Tình huống: Chiếc xe con màu trắng đỗ cố định bên lề đường phía bên trái trong suốt toàn bộ 190 frame.
+- Quyết định: Vẫn gán nhãn vehicle, đặt một bbox ôm sát thân xe nhìn thấy ở frame 1 và duy trì một ID duy nhất đến hết frame 190, không bấm outside.
+- Lý do: Yêu cầu của bài là quản lý toàn bộ xe bốn bánh có mặt trong khung hình. Xe đỗ vẫn là xe cơ giới, nếu bỏ qua sẽ bị phạt 190 lỗi False Negative, còn nếu bấm outside giữa chừng thì track sẽ bị đứt đoạn.
 
 ### Ca 2
-- Clip / frame / ID: `clip_01` / frame 55-150 / ID 4 (ứng với Gold Track 4)
-- Tình huống: Xe rẽ từ nhánh đường phía trên bên phải (rìa ảnh $x \approx 936, y \approx 223$), ban đầu chỉ lộ một góc nhỏ đầu xe và bị cắt bởi cạnh phải khung hình.
-- Quyết định: Bắt đầu track từ frame 55 ngay khi nhận diện được đầu xe ô tô, bbox bám sát mép phải ($x_2 = 960$). Đến frame 150 khi toàn bộ thân xe đi khỏi mép trái thì bấm ngay phím `O` (outside).
-- Lý do: Tuân thủ luật chạm mép không đoán phần ngoài ảnh; bấm outside dứt khoát tại frame 150 để tránh việc CVAT tiếp tục giữ bbox lơ lửng ở khoảng trống lề đường gây lỗi bbox treo.
+- Vị trí: clip 01, frame 55 đến 150, ID 4, tương ứng Gold Track 4
+- Tình huống: Chiếc xe rẽ từ ngã ba phía trên bên phải vào đường chính, ban đầu chỉ nhô một phần nhỏ đầu xe ở sát mép phải khung hình.
+- Quyết định: Bắt đầu vẽ track từ frame 55 ngay khi nhận diện được đầu xe ô tô, cạnh phải bbox chạm sát mép ảnh. Đến frame 150 khi toàn bộ đuôi xe vừa trôi khỏi mép trái thì bấm ngay phím O để kết thúc track.
+- Lý do: Bbox chạm mép ảnh không vẽ thừa ra ngoài. Bấm outside dứt khoát tại frame 150 giúp tránh lỗi bbox treo lơ lửng ở khoảng trống khi xe đã đi mất.
 
 ### Ca 3
-- Clip / frame / ID: `clip_01` / frame 136-169 / ID 8 (ứng với Gold Track 8)
-- Tình huống: Chiếc xe xuất hiện từ mép đáy màn hình ($y \approx 508-540$) chạy chéo lên góc phải. Ở frame 136-138, xe mới chỉ nhú một phần nhỏ nóc xe ở góc dưới cùng.
-- Quyết định: Ban đầu nhóm bắt đầu gán từ frame 139 khi xe đã nhô lên rõ. Sau khi đối chiếu với Gold và Model (Model ID 54 bắt được từ frame 136), nhóm đã điều chỉnh luật: bắt đầu track ngay từ frame 136 khi phần mui xe có diện tích $> 20$px.
-- Lý do: Chờ xe vào sâu mới gán sẽ làm mất 3 frame đầu tiên của vòng đời xe, gây ra FN và làm giảm độ bao phủ track (partially covered track).
+- Vị trí: clip 01, frame 136 đến 169, ID 8, tương ứng Gold Track 8
+- Tình huống: Xe xuất hiện từ góc đáy màn hình đi chéo lên phía trên. Ở frame 136 đến 138, xe mới chỉ nhô một phần nóc xe sát mép đáy.
+- Quyết định: Ban đầu nhóm bắt đầu gán từ frame 139 khi xe đã lên rõ. Sau khi đối chiếu thấy xe đã có diện tích nhìn thấy từ frame 136, nhóm chỉnh sửa lại track bắt đầu ngay từ frame 136.
+- Lý do: Chờ xe vào sâu mới vẽ sẽ làm mất 3 frame đầu tiên của xe, tạo ra lỗi False Negative và làm giảm độ bao phủ của track.
 
-## 5. Sửa gì sau khi chấm với gold và sau khi kiểm chéo
+## 5. Cải tiến guideline sau khi kiểm chéo và chấm với gold
 
-Luật nào trong file này hoá ra còn thiếu hoặc còn mơ hồ? Viết lại cho rõ:
+Sau khi kiểm tra với bộ nhãn gold và trao đổi với bạn cùng nhóm, nhóm đã làm rõ các điểm sau trong quy trình:
 
-- **Quy tắc bắt đầu track ở rìa ảnh (Entry threshold)**: Trước đây chỉ ghi chung chung "bắt đầu khi xác định được là xe", dẫn đến việc ở các frame xe mới chớm vào từ mép dưới (frame 136 của Track 8) hoặc làn xa (frame 79 của Track 5) bị bỏ sót vài frame đầu. Đã sửa lại: *Bắt đầu track ngay khi bất kỳ bộ phận đặc trưng nào của xe (đèn, nóc, kính) xuất hiện ở rìa với kích thước $\ge 20$px*.
-- **Quy tắc kiểm tra mật độ keyframe khi xe rẽ/đổi góc nhìn**: Khi xe từ làn xa tiến lại gần camera (như Track 4 và Track 6), kích thước bbox tăng theo cấp số nhân và góc phối cảnh thay đổi. Nếu để keyframe thưa (15-20 frame), bbox nội suy tuyến tính sẽ bị lệch tâm (IoU tụt dưới 0.60). Đã bổ sung quy tắc: *Bắt buộc đặt keyframe dày 3-5 frame ở mọi khúc cua hoặc khi xe thay đổi kích thước nhanh chóng*.
-- **Quy tắc dứt điểm track (Exit threshold)**: Kiểm tra kỹ frame xe hoàn toàn khuất khỏi màn hình, bấm `O` (outside) ngay tại frame kế tiếp, tránh để bbox đứng im ở rìa tạo cảnh báo bbox treo.
+- Quy tắc bắt đầu track ở rìa ảnh: Trước đây chỉ ghi chung chung là bắt đầu khi nhận ra xe. Nhóm sửa lại rõ ràng: Bắt đầu vẽ ngay khi nhìn thấy bất kỳ bộ phận đặc trưng nào của xe như nóc, đèn hoặc kính xe xuất hiện ở mép ảnh với kích thước từ 20 pixel trở lên.
+- Mật độ đặt keyframe ở đoạn xe rẽ: Khi xe từ ngã ba rẽ vào và tiến lại gần camera như Track 4 và Track 6, kích thước xe tăng nhanh và góc phối cảnh thay đổi liên tục. Nếu để keyframe thưa từ 15 đến 20 frame thì bbox tự động nội suy sẽ bị trôi khỏi thân xe. Nhóm bổ sung quy định bắt buộc đặt keyframe dày từ 3 đến 5 frame ở các đoạn xe rẽ hoặc đổi hướng di chuyển.
+- Quy tắc bấm outside: Khi xe chuẩn bị rời khỏi khung hình, tua chậm từng frame để xác định đúng frame cuối cùng xe còn trong ảnh. Bấm phím O ở ngay frame kế tiếp để kết thúc track, tránh tình trạng bbox đứng yên ở rìa ảnh gây cảnh báo lỗi.
