@@ -1,0 +1,148 @@
+{
+  "clip": "clip_01",
+  "frames": 190,
+  "iou_threshold": 0.5,
+  "pred_file": "annotations\\clip_01\\gt.txt",
+  "gt_file": "gold\\clip_01\\gt.txt",
+  "pred_label": "PRED annotations\\clip_01\\gt.txt",
+  "gt_label": "GT   gold\\clip_01\\gt.txt",
+  "metrics": {
+    "HOTA": 0.7405,
+    "DetA": 0.717,
+    "AssA": 0.7708,
+    "LocA": 0.8182,
+    "IDF1": 0.9539,
+    "IDTP": 538,
+    "IDFP": 17,
+    "IDFN": 35,
+    "MOTA": 0.9092,
+    "MOTP": 0.7894,
+    "IDSW": 0,
+    "FP": 17,
+    "FN": 35,
+    "GT_boxes": 573,
+    "PRED_boxes": 555
+  },
+  "gate": {
+    "checks": {
+      "IDF1": {
+        "value": 0.9539007092198581,
+        "required": 0.8,
+        "passed": true
+      },
+      "MOTA": {
+        "value": 0.9092495636998255,
+        "required": 0.75,
+        "passed": true
+      },
+      "MOTP": {
+        "value": 0.7894365152694497,
+        "required": 0.7,
+        "passed": true
+      }
+    },
+    "passed": true
+  },
+  "diagnostics": {
+    "missed_gt_tracks": [],
+    "fragmented_gt_tracks": [],
+    "partially_covered_gt_tracks": [
+      {
+        "gt_track": 6,
+        "covered": 40,
+        "gt_length": 56,
+        "ratio": 0.71
+      }
+    ],
+    "ghost_pred_tracks": [],
+    "id_switches": [],
+    "loose_boxes": [
+      {
+        "frame": 90,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.511
+      },
+      {
+        "frame": 96,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.519
+      },
+      {
+        "frame": 89,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.539
+      },
+      {
+        "frame": 117,
+        "gt_track": 6,
+        "pred_track": 7,
+        "iou": 0.548
+      },
+      {
+        "frame": 121,
+        "gt_track": 6,
+        "pred_track": 7,
+        "iou": 0.55
+      },
+      {
+        "frame": 11,
+        "gt_track": 2,
+        "pred_track": 1,
+        "iou": 0.559
+      },
+      {
+        "frame": 88,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.567
+      },
+      {
+        "frame": 100,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.579
+      },
+      {
+        "frame": 102,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.587
+      },
+      {
+        "frame": 94,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.592
+      },
+      {
+        "frame": 154,
+        "gt_track": 8,
+        "pred_track": 8,
+        "iou": 0.592
+      },
+      {
+        "frame": 143,
+        "gt_track": 8,
+        "pred_track": 8,
+        "iou": 0.594
+      },
+      {
+        "frame": 87,
+        "gt_track": 5,
+        "pred_track": 5,
+        "iou": 0.595
+      },
+      {
+        "frame": 168,
+        "gt_track": 8,
+        "pred_track": 8,
+        "iou": 0.595
+      }
+    ],
+    "n_gt_tracks": 8,
+    "n_pred_tracks": 8
+  }
+}
